@@ -21,23 +21,25 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 
 class StudentViewSet(ModelViewSet):
     serializer_class = StudentSerializer
-    queryset = Student.objects.all()
-    permission_classes = [IsAuthenticated]
+    queryset = Student.objects.filter(is_deleted = False)
     filter_backends = [SearchFilter]
     search_fields = ['account__username']
 
-    def destroy(self, request, *args, **kwargs):
-        try:
+    def destroy(self, request, *args, pk=None, **kwargs ):
+        # try:
             instance = self.get_object()
-            id = instance.account.id
-            Account.objects.filter(id=id).update(is_active = False)
-            instance.is_deleted = True
-            instance.save()
+            id = instance.id
+            student = Student.objects.get(id=id)
+            Student.objects.filter(id=id).update(is_deleted = True)
+            Account.objects.filter(id=student.account.id).update(is_active=True)
+            # instance.is_deleted = True
+            # instance.save()
+            # Student.objects.filter(id=id).update(is_deleted = True)
             data = {"response":"Successfully deleted"}
             return Response(data,status=status.HTTP_204_NO_CONTENT)
-        except:
-                data = {"Access Denied !"}
-                return Response(data,status=status.HTTP_204_NO_CONTENT)
+        # except:
+        #         data = {"Access Denied !"}
+        #         return Response(data,status=status.HTTP_204_NO_CONTENT)
 
     def retrieve(self, request, pk=None, *args, **kwargs):
         queryset = self.get_queryset()
@@ -55,46 +57,18 @@ class SpecializationViewSet(ModelViewSet):
     filter_backends = [SearchFilter]
     search_fields = ['student__user__username','student__user__first_name','student__user__last_name']
 
+    def destroy(self, request, *args, **kwargs):
+        try:
+            user = self.request.user
+            instance = self.get_object()
+            id = instance.id
+            Specialization.objects.filter(id=id).update(is_deleted = True)
+            data = {"response":"Successfully deleted"}
+            return Response(data,status=status.HTTP_200_OK)
+
+        except:
+                data = {"Access Denied !"}
+                return Response(data,status=status.HTTP_403_FORBIDDEN)  
+
 # ============================================
 
-# class AdminViewSet(ModelViewSet):
-
-#     queryset = Account.objects.filter(role ='admin',is_active = True)
-#     serializer_class = AdminSerializer
-#     permission_classes = [IsAuthenticated]
-
-#     def create(self, request, *args, **kwargs):
-#         # self.object = self.get_object()
-#         serializer = self.get_serializer(data=request.data)
-#         data = {}
-#         if serializer.is_valid(): 
-
-#             serializer.save()
-#             data = serializer.data
-#             return Response(data=data)
-#         else:
-#             data = serializer.errors
-#             data['response'] = 'Error'
-#             data['error_message'] = 'Data Not Valid'
-#         return Response(data = data, status=status.HTTP_400_BAD_REQUEST)
-
-#     def update(self, request, *args, **kwargs):
-#         # self.object = self.get_object()
-#         serializer = self.get_serializer(self.get_object(),data=request.data)
-#         data = {}
-#         if serializer.is_valid():
-#             serializer.save()
-#             data = serializer.data
-#             return Response(data=data)
-#         else:
-#             data = serializer.errors
-#             data['response'] = 'Error'
-#             data['error_message'] = 'Data Not Valid'
-#         return Response(data = data, status=status.HTTP_400_BAD_REQUEST)
-
-#     def destroy(self, request, *args, **kwargs):
-#         instance = self.get_object()
-#         id = instance.id
-#         Account.objects.filter(id=id).update(is_active = False)
-#         data = {"response":"Successfully deleted"}
-#         return Response(data,status=status.HTTP_204_NO_CONTENT)

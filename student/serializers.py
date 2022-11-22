@@ -63,6 +63,8 @@ class SpecializationSerializer(serializers.ModelSerializer):
       
 
 class StudentSerializer(serializers.ModelSerializer):
+    queryset = Student.objects.filter(is_deleted=False).order_by("-auto_id") ####
+
     username = serializers.CharField(write_only=True)
     phone = serializers.CharField(write_only=True)
     email = serializers.CharField(write_only=True)
@@ -121,60 +123,73 @@ class StudentSerializer(serializers.ModelSerializer):
             'fees_paid',
             'application_submitted']
 
+        extra_kwargs = {
+        'balance':{'read_only': True},
+        }
+
+
 
     def create(self, validated_data):
         password = password_generater(8)
         validated_data["password"] = password
         validated_data["password2"] = password
         validated_data["role"] = "student"
-        if(not Account.objects.filter(username=validated_data["username"]).exists()):
-            if(not Account.objects.filter(email=validated_data["email"]).exists()):
-                account_serializer = RegistrationSerializer(data=validated_data)
-                if account_serializer.is_valid():
-                    account = account_serializer.save()
-                    student = Student.objects.create(
-                        account = account,
-                        auto_id = get_auto_id(Student),
-                    )
-                    # from_email = "mail.osperb@gmail.com"
-                    to_email = account.email
-                    subject = "Student Registration Completed"
-                    html_context = {
-                        "title":"Student Registration Completed",
-                        "data":[
-                            {
-                                "label":"username",
-                                "value":account.username
-                            },
-                            {
-                                "label":"First Name",
-                                "value":account.full_name
-                            },
-                            {
-                                "label":"email",
-                                "value":account.email
-                            },
-                            {
-                                "label":"phone",
-                                "value":account.phone
-                            },
-                            {
-                                "label":"password",
-                                "value":password
-                            }
-                        ]
-                    }
-                    text_content = str(html_context)
-                    send_common_mail(html_context,to_email,subject)
+        if(not Account.objects.filter(username=validated_data["username"]).exists() and not Account.objects.filter(email=validated_data["email"]).exists()):
+            account_serializer = RegistrationSerializer(data=validated_data)
+            if account_serializer.is_valid():
+                account = account_serializer.save()
+                for e in ['full_name', 'username', 'email', 'phone', 'password', 'password2', 'role']: 
+                    validated_data.pop(e)
+
+                validated_data["account"] = account
+
+                student = Student.objects.create(
+                    **validated_data,
+                    # account = account,
+                    auto_id = get_auto_id(Student)
+                )
+                # from_email = "mail.osperb@gmail.com"
+                to_email = account.email
+                subject = "Student Registration Completed"
+                html_context = {
+                    "title":"Student Registration Completed",
+                    "data":[
+                        {
+                            "label":"username",
+                            "value":account.username
+                        },
+                        {
+                            "label":"First Name",
+                            "value":account.full_name
+                        },
+                        {
+                            "label":"email",
+                            "value":account.email
+                        },
+                        {
+                            "label":"phone",
+                            "value":account.phone
+                        },
+                        {
+                            "label":"password",
+                            "value":password
+                        }
+                    ]
+                }
+                text_content = str(html_context)
+                send_common_mail(html_context,to_email,subject)
+                return student
+
             else:
-                raise serializers.ValidationError({'error_message': 'Email already exists !'})
+                raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
         else:
             if(not Account.objects.filter(email=validated_data["email"]).exists()):
-                raise serializers.ValidationError({'error_message': 'Username already exists !'})
+                raise serializers.ValidationError({'error_message': 'Username or email already exists !'})
             else:
                 raise serializers.ValidationError({'error_message': 'Username and Email already exists !'})
 
-        return student
+        
+
 
     def update(self, instance, validated_data):
         try:
@@ -202,95 +217,4 @@ class StudentSerializer(serializers.ModelSerializer):
             else:
                 raise serializers.ValidationError({'error_message': 'Email and Username already exists !'})
 
-
-
-   
-
-# class AdminSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = Account
-#         fields = ['id','full_name','username','email','phone',]
-
-#     def create(self, validated_data):
-#         password = password_generater(8)
-#         validated_data["password"] = password
-#         validated_data["password2"] = password
-#         validated_data["role"] = "admin"
-#         if(not Account.objects.filter(username=validated_data["username"]).exists()):
-#             if(not Account.objects.filter(email=validated_data["email"]).exists()):
-#                 account_serializer = RegistrationSerializer(data=validated_data)
-#                 if account_serializer.is_valid():
-#                     account = account_serializer.save()
-#                     # from_email = "mail.osperb@gmail.com"
-#                     to_email = account.email
-#                     subject = "admin Registration Completed"
-#                     html_context = {
-#                         "title":"admin Registration Completed",
-#                         "data":[
-#                             {
-#                                 "label":"username",
-#                                 "value":account.username
-#                             },
-#                             {
-#                                 "label":"First Name",
-#                                 "value":account.full_name
-#                             },
-#                             {
-#                                 "label":"email",
-#                                 "value":account.email
-#                             },
-#                             {
-#                                 "label":"phone",
-#                                 "value":account.phone
-#                             },
-#                             {
-#                                 "label":"password",
-#                                 "value":password
-#                             }
-#                         ]
-#                     }
-#                     text_content = str(html_context)
-#                     send_common_mail(html_context,to_email,subject)
-#             else:
-#                 raise serializers.ValidationError({'email': 'Email already exists !'})
-#         else:
-#             if(not Account.objects.filter(email=validated_data["email"]).exists()):
-#                 raise serializers.ValidationError({'username': 'Username already exists !'})
-#             else:
-#                 raise serializers.ValidationError({'error_message': 'Username and Email already exists !'})
-#         return account
-
-#     def update(self, instance, validated_data):
-#         instance.save()
-
-#         try:
-#             username = validated_data["username"]
-#             email = validated_data["email"]
-#         except:
-#             username = ""
-#             email = ""
-#         if((not Account.objects.filter(username=username).exists()) or
-#             Account.objects.filter(pk = instance.pk ,username=username).exists()):
-#                 if((not Account.objects.filter(email=email).exists()) or Account.objects.filter(pk = instance.pk ,email=email).exists()):
-
-
-
-#                     account = Account.objects.get(pk=instance.pk)
-#                     account.full_name = validated_data.get('full_name', account.full_name)
-#                     account.username = validated_data.get('username', account.full_name)
-#                     account.email = validated_data.get('email', account.full_name)
-#                     account.phone = validated_data.get('phone', account.phone)
-#                     account.save()
-            
-#                     return account
-#                 else:
-#                     raise serializers.ValidationError({'error_message': 'Email Username already exists !'})
-#         else:
-#             if((not Account.objects.filter(email=validated_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=validated_data["email"]).exists()):
-#                 raise serializers.ValidationError({'error_message': 'Username already exists !'})
-#             else:
-#                 raise serializers.ValidationError({'error_message': 'Email and Username already exists !'})
-        
-    
-  
 
