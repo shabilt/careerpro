@@ -8,6 +8,7 @@ app_name = 'student'
 router = routers.DefaultRouter()
 router.register('student',StudentViewSet, basename='student')
 router.register('specialization',SpecializationViewSet, basename='specialization')
+router.register('job-application',JobApplicationViewSet, basename='job_application')
 # router.register('admin',AdminViewSet, basename='admin')
 
 

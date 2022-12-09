@@ -10,15 +10,11 @@ from main.models import BaseModel
 # Create your models here.
 
 class Student(BaseModel):
-
-
     WORKING_TYPE =(
         ("Work",'Work'),
         ("Internship",'Internship')
     )
-
-
-    account = models.ForeignKey(Account,related_name='student_account',on_delete=models.PROTECT)
+    account = models.ForeignKey(Account,related_name='student_account',on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     address = models.TextField(null=True,blank=True)
     dob = models.DateField(null=True,blank=True)
@@ -90,7 +86,7 @@ class Specialization(BaseModel):
     title = models.TextField(null=True,blank=True)
     status = models.CharField(max_length=30,choices=STATUS_CHOICES, null=True,blank=True)
     description = models.CharField(max_length=140,null=True,blank=True)
-    student = models.ForeignKey(Student,related_name='specialization_student',on_delete=models.PROTECT)
+    student = models.ForeignKey(Student,related_name='specializations',on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'specilizations'
@@ -101,6 +97,31 @@ class Specialization(BaseModel):
 
     def __str__(self):
         return self.title
+    
+
+
+class JobApplication(BaseModel):
+    STAGE_CHOICES= [
+        ('applied','Applied'),
+        ('declined','Decline'),
+        ('pending','Pending'),]
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    date = models.CharField(max_length=140,null=True,blank=True)
+    company = models.CharField(max_length=140,null=False,blank=False)
+    position = models.CharField(max_length=140,null=False,blank=False)
+    job_description = models.CharField(max_length=140,null=False,blank=False)
+    stage = models.CharField(max_length=140,choices=STAGE_CHOICES,blank=False)
+    last_date =  models.CharField(max_length=140,null=True,blank=True)
+
+
+    class Meta:
+        db_table = 'job_applications'
+        verbose_name =  _('job_application')
+        verbose_name_plural = _('job_applications')
+        ordering = ('-date_added',)
+
+    def __str__(self):
+        return "{} - {}".format(self.company,self.student.account.username)
 
 
 

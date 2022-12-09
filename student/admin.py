@@ -7,3 +7,14 @@ class Admin(admin.ModelAdmin):
 # admin.site.register(Student,Admin)
 # admin.site.register(Specialization)
 
+
+class StudentAdmin(admin.ModelAdmin):
+    list_display = (
+    'auto_id',
+    
+    )
+admin.site.register(Student,StudentAdmin)
+
+class SpecializationAdmin(admin.ModelAdmin):
+    list_display = ('auto_id','title')
+admin.site.register(Specialization,SpecializationAdmin)
