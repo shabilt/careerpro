@@ -124,7 +124,22 @@ class JobApplication(BaseModel):
         return "{} - {}".format(self.company,self.student.account.username)
 
 
+class StudentNote(BaseModel):
+    student = models.ForeignKey(Student,related_name='student',on_delete=models.CASCADE)
+    title = models.CharField(max_length=150,null=True,blank=True)
+    note = models.TextField(null=True,blank=True)
+    date = models.DateField(null=True,blank=True)
 
+    class Meta:
+        db_table = 'student_note'
+        verbose_name = ('Student_Note')
+        verbose_name_plural = _('Student_Note')
+        ordering = ('-date_added',)
+
+
+    def __str__(self):
+        return str(self.title)
+        
 
 
 

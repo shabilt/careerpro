@@ -1,7 +1,7 @@
 from urllib import response
 from django.shortcuts import get_object_or_404, render
 # from main.permissions import IsUser
-from student.serializers import SpecializationSerializer, StudentSerializer,UpdateStudentSerializer,JobApplicationSerializer
+from student.serializers import SpecializationSerializer, StudentNoteSerializer, StudentSerializer,UpdateStudentSerializer,JobApplicationSerializer
 from .models import *
 from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import ModelViewSet
@@ -111,5 +111,11 @@ class JobApplicationViewSet(ModelViewSet):
     
 
 
-
+class StudentNoteViewSet(ModelViewSet):
+    serializer_class = StudentNoteSerializer
+    queryset = StudentNote.objects.all()
+    permission_classes = [IsAdminUser]
+    filter_backends = [SearchFilter]
+    search_fields = ['title']
+    
 

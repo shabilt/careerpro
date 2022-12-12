@@ -3,7 +3,7 @@ from rest_framework import serializers
 from account.models import Account
 from account.serializers import AccountSerializer, RegistrationSerializer
 from main.functions import get_auto_id, password_generater, send_common_mail
-from student.models import Specialization, Student,JobApplication
+from student.models import Specialization, Student,JobApplication, StudentNote
 from django.db import transaction
 
 class SpecializationSerializer(serializers.ModelSerializer):
@@ -415,8 +415,8 @@ class JobApplicationSerializer(serializers.ModelSerializer):
             **validated_data,
             auto_id = get_auto_id(JobApplication)
         )
-        student = validated_data['student']
-        email = student.account.email
+        # student = validated_data['student']
+        # email = student.account.email
 
         # from_email = "careerportal.in <ecolumsmarketing@gmail.com>"
         # subject = "New job Alert"
@@ -438,3 +438,24 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 
 
         return job_application
+
+
+
+
+class StudentNoteSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudentNote
+        fields = ['id','student','title','note','date']
+
+        extra_kwargs = {
+                'auto_id': {'read_only': True},
+        }	
+
+
+    def create(self,validated_data):
+        studentNote = StudentNote.objects.create(
+            **validated_data,
+            auto_id = get_auto_id(StudentNote),
+            creator = self.context['request'].user
+        )
+        return studentNote
