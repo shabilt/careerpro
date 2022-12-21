@@ -198,7 +198,7 @@ def login_view(request):
         context['pk'] = user.pk
         context['username'] = username.lower()
         context['token'] = token.key
-        # context['role'] = user.role
+        context['role'] = user.role
     else:
         context['response'] = 'Error'
         context['error_message'] = 'The username or password is incorrect'
