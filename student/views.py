@@ -116,6 +116,12 @@ class StudentNoteViewSet(ModelViewSet):
     queryset = StudentNote.objects.all()
     permission_classes = [IsAdminUser]
     filter_backends = [SearchFilter]
-    search_fields = ['title']
-    
+    search_fields = ['title','date','note']
+    def get_queryset(self):
+        student = self.request.query_params.get('student')
+        if(student):
+            queryset = StudentNote.objects.filter(student=student)
+        else:
+            queryset = StudentNote.objects.all()
+        return queryset
 
