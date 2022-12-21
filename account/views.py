@@ -53,6 +53,7 @@ def registration_view(request):
             data['email'] = user.email
             data['username'] = user.username
             data['pk'] = user.pk
+            data['role'] = user.role
 
             token = Token.objects.get(user=user).key
             data['token'] = token
