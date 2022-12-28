@@ -53,7 +53,7 @@ class Account(AbstractBaseUser):
     phone = models.CharField(max_length=12)
     address = models.CharField(max_length=140,null=True,blank=True)
     dob = models.CharField(max_length=30,null=True,blank=True)
-    role = models.CharField(max_length=30,null=True,blank=True)
+    role = models.CharField(max_length=30,null=True,blank=True,default="student")
 
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['phone','email',]
