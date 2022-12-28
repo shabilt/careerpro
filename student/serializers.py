@@ -443,9 +443,10 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 
 
 class StudentNoteSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='student.account.username',read_only = True)
     class Meta:
         model = StudentNote
-        fields = ['id','student','title','note','date']
+        fields = ['id','student','student_name','title','note','date']
 
         extra_kwargs = {
                 'auto_id': {'read_only': True},

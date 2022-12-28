@@ -13,6 +13,7 @@ from account.views import(
     login_view,
     logout_view,
     profile_view,
+    validate_email
 )
 from rest_framework.authtoken.views import obtain_auth_token
 
@@ -33,6 +34,7 @@ urlpatterns = [
     path('logout', logout_view, name="logout"), 
     path('profile', profile_view, name="profile"), 
     path('register', registration_view, name="register"),
+    path('validate-email', validate_email, name="register"),
 ]
 
 urlpatterns += router.urls
