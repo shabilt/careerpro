@@ -12,11 +12,6 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from main.functions import get_auto_id
 
 
-
-
-
-
-
 # Create your views here.
 
 
@@ -58,7 +53,7 @@ class StudentViewSet(ModelViewSet):
                     )
         instance = Student.objects.get(pk=instance.pk)
         data = StudentSerializer(instance=instance).data
-        return Response(data,status=status.HTTP_204_NO_CONTENT)
+        return Response(data,status=status.HTTP_200_OK)
 
     def destroy(self, request, *args, pk=None, **kwargs ):
         # try:
