@@ -43,7 +43,7 @@ def registration_view(request):
             data['response'] = 'Error'
             return Response(data)
         request_data = request.data.copy()
-        request_data['role'] = 'user'
+        request_data['role'] = 'student'
         request_data['creator'] = request.user
 
         serializer = RegistrationSerializer(data=request_data)

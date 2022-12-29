@@ -98,7 +98,7 @@ REST_FRAMEWORK = {
 
 
 
-WSGI_APPLICATION = 'careerpro.wsgi.application'
+ASGI_APPLICATION = 'careerpro.asgi.application'
 
 
 CORS_ORIGIN_ALLOW_ALL = True
