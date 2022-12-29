@@ -128,7 +128,7 @@ class StudentNote(BaseModel):
     student = models.ForeignKey(Student,related_name='student',on_delete=models.CASCADE)
     title = models.CharField(max_length=150,null=True,blank=True)
     note = models.TextField(null=True,blank=True)
-    date = models.DateField(null=True,blank=True,auto_now_add=True)
+    date = models.DateTimeField(null=True,blank=True,auto_now_add=True)
 
     class Meta:
         db_table = 'student_note'

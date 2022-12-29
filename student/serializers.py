@@ -313,8 +313,8 @@ class StudentSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
 
               
-    def update(self, instance, validated_data):
-        print("upadte ///")
+    # def update(self, instance, validated_data):
+    #     print("upadte ///")
         # try:
         #     username = validated_data["username"]
         #     email = validated_data["email"]
