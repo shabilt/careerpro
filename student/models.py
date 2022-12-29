@@ -17,7 +17,7 @@ class Student(BaseModel):
     account = models.ForeignKey(Account,related_name='student_account',on_delete=models.CASCADE)
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     address = models.TextField(null=True,blank=True)
-    dob = models.DateField(null=True,blank=True)
+    dob = models.CharField(max_length=30, null=True,blank=True)
     profilepic = models.ImageField(upload_to='Profile_pic' ,null= True,blank=True)
     cv = models.FileField(upload_to ='cv',null=True,blank=True)
     cover_letter = models.FileField(upload_to ='cv',null=True,blank=True)
