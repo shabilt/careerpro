@@ -10,9 +10,12 @@ from asgiref.sync import sync_to_async
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self,):
         user = self.scope["user"]
+        print("user")
         print(user)
+        print(self.scope)
         self.roomGroupName = "user_" + str(user)
         print(self.roomGroupName)
+
         await self.channel_layer.group_add(
             self.roomGroupName ,
             self.channel_name

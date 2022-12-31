@@ -25,6 +25,7 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls')),
     path('api/v1/student/', include('student.urls', namespace='student_api')),
     path('api/v1/account/', include('account.urls', namespace='account_api')),
+    path('api/v1/chat/', include('chat.urls', namespace='chat_api')),
 
 ]+ static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

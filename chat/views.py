@@ -13,6 +13,8 @@ from main.functions import get_auto_id
 
 
 
+
+
 from django.shortcuts import render
 
 
@@ -27,13 +29,24 @@ def room(request, room_name):
 
 class ChatViewSet(ModelViewSet):
     serializer_class = ChatSerializer
-    queryset = Chat.objects.all()
+    # queryset = Chat.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter]
     # search_fields = ['student__user__username','student__user__first_name','student__user__last_name']
     
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        user = self.request.user
+        chat_member = ChatMember.objects.filter(account=user).prefetch_related('chat')
+
+        print(chat_member)
+        return chat_member.chat.objects.filter()
+
     def list(self, request):
-        queryset = Chat.objects.all()
+        # queryset = Chat.objects.all()
         serializer = ChatSerializer(queryset, many=True)
         return Response(serializer.data)
 
