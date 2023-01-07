@@ -150,12 +150,12 @@ def dashboard(request):
         job_application = JobApplication.objects.filter(student=student)
     else:
         return Response(data,status=status.HTTP_200_OK)   
-    job_application_count = job_application.objects.filter().count()
-    applied_job_application_count = job_application.objects.filter(stage='applied').count()
-    pending_job_application_count = job_application.objects.filter(stage='pending').count()
+    job_application_count = job_application.filter().count()
+    applied_job_application_count = job_application.filter(stage='applied').count()
+    pending_job_application_count = job_application.filter(stage='pending').count()
     declined_job_application_count = job_application_count - pending_job_application_count
     data["job_application_count"]=job_application_count
     data["applied_job_application_count"]=applied_job_application_count
     data["declined_job_application_count"]=declined_job_application_count
-    
+
     return Response(data,status=status.HTTP_200_OK)
