@@ -42,13 +42,16 @@ class ChatViewSet(ModelViewSet):
         user = self.request.user
         chat_member = ChatMember.objects.filter(account=user).prefetch_related('chat')
 
-        print(chat_member)
         return chat_member.chat.objects.filter()
 
     def list(self, request):
-        # queryset = Chat.objects.all()
+        if(request.user.is_admin):
+            queryset = Chat.objects.all()
+        else:
+            members = ChatMember.objects.filter(account=request.user).values_list("chat__pk")
+            queryset = Chat.objects.filter(pk__in = members)
         serializer = ChatSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 
@@ -63,7 +66,7 @@ class ChatMemberViewSet(ModelViewSet):
     def list(self, request):
         queryset = ChatMember.objects.all()
         serializer = ChatMemberSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_200_OK)
     
 
     def create(self, request, *args, **kwargs):
@@ -84,11 +87,16 @@ class MessageViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter]
     # search_fields = ['student__user__username','student__user__first_name','student__user__last_name']
-    
+
     def list(self, request):
-        queryset = Message.objects.all()
+        chat = self.request.query_params.get('chat')
+        if(chat):
+            queryset = Message.objects.filter(chat=chat)
+        else:
+            queryset = []
+
         serializer = MessageSerializer(queryset, many=True)
-        return Response(serializer.data)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
 
 

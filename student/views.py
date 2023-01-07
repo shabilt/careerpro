@@ -10,6 +10,7 @@ from rest_framework.response import Response
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from main.functions import get_auto_id
+from rest_framework.decorators import api_view, permission_classes
 
 
 # Create your views here.
@@ -120,3 +121,41 @@ class StudentNoteViewSet(ModelViewSet):
             queryset = StudentNote.objects.all()
         return queryset
 
+
+@api_view(['GET', ])
+@permission_classes([IsAuthenticated])
+def dashboard(request):
+    data = {
+        "students_count":0,
+        "paid_students_count":0,
+        "unpaid_students_count":0,
+        "job_application_count":0,
+        "applied_job_application_count":0,
+        "declined_job_application_count":0,
+    }
+    
+
+    if(request.user.is_admin):
+        students_count = Student.objects.all().count()
+        paid_students_count = Student.objects.filter(fees_paid=True).count()
+        unpaid_students_count = Student.objects.filter(fees_paid=False).count()
+        job_application = JobApplication.objects.all()
+        data["students_count"]=students_count
+        data["paid_students_count"]=paid_students_count
+        data["unpaid_students_count"]=unpaid_students_count
+        
+
+    elif(request.user.role == 'student'):
+        student = Student.objects.filter(account = request.user).first()
+        job_application = JobApplication.objects.filter(student=student)
+    else:
+        return Response(data,status=status.HTTP_200_OK)   
+    job_application_count = job_application.objects.filter().count()
+    applied_job_application_count = job_application.objects.filter(stage='applied').count()
+    pending_job_application_count = job_application.objects.filter(stage='pending').count()
+    declined_job_application_count = job_application_count - pending_job_application_count
+    data["job_application_count"]=job_application_count
+    data["applied_job_application_count"]=applied_job_application_count
+    data["declined_job_application_count"]=declined_job_application_count
+    
+    return Response(data,status=status.HTTP_200_OK)

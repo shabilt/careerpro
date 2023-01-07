@@ -14,7 +14,10 @@ router.register('student-note',StudentNoteViewSet,basename='student_note')
 
 
 
-urlpatterns=[]
+
+urlpatterns=[
+    path('dashboard', dashboard, name="dashboard"),
+]
 
 urlpatterns += router.urls
 

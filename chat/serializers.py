@@ -8,12 +8,14 @@ from chat.models import Chat,ChatMember,Message
 from django.db import transaction
 
 class ChatSerializer(serializers.ModelSerializer):
+    member = serializers.StringRelatedField(many=True)
     class Meta:
         model = Chat
         fields = [
             'id',
             'name',
-            'is_group'
+            'is_group',
+            'member'
         ]
 
 
@@ -31,6 +33,7 @@ class ChatMemberSerializer(serializers.ModelSerializer):
         }
 
 class MessageSerializer(serializers.ModelSerializer):
+    sender_name = serializers.CharField(source='sender.username',read_only = True)
     class Meta:
         model = Message
         fields = [
@@ -39,7 +42,8 @@ class MessageSerializer(serializers.ModelSerializer):
             'sender',
             'content',
             'timestamp',
-            'read'
+            'read',
+            'sender_name'
         ]
 
 

@@ -28,7 +28,7 @@ class Chat(models.Model):
     
 class ChatMember(models.Model):
     chat = models.ForeignKey(
-        Chat, on_delete=models.CASCADE
+        Chat, on_delete=models.CASCADE,related_name='member'
     )
     account = models.ForeignKey(
         Account, on_delete=models.CASCADE
