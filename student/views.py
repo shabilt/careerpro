@@ -192,7 +192,7 @@ def dashboard(request):
 @permission_classes([IsAuthenticated])
 def my_profile(request):
     if(Student.objects.filter(account=request.user).exists()):
-        student = Student.objects.filter(account=request.user)
+        student = Student.objects.filter(account=request.user).first()
     else:
         student = Student.objects.create(
             account=request.user,
