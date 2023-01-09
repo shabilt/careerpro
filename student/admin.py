@@ -12,7 +12,7 @@ class Admin(admin.ModelAdmin):
 
 class StudentAdmin(admin.ModelAdmin):
     list_display = (
-    'auto_id',
+    'auto_id','account'
     
     )
 admin.site.register(Student,StudentAdmin)

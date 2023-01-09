@@ -162,10 +162,10 @@ def dashboard(request):
     
 
     if(request.user.is_admin):
-        students_count = Student.objects.all().count()
-        paid_students_count = Student.objects.filter(fees_paid=True).count()
-        unpaid_students_count = Student.objects.filter(fees_paid=False).count()
-        job_application = JobApplication.objects.all()
+        students_count = Student.objects.filter(is_deleted=False).count()
+        paid_students_count = Student.objects.filter(fees_paid=True,is_deleted=False).count()
+        unpaid_students_count = Student.objects.filter(fees_paid=False,is_deleted=False).count()
+        job_application = JobApplication.objects.filter(is_deleted=False)
         data["students_count"]=students_count
         data["paid_students_count"]=paid_students_count
         data["unpaid_students_count"]=unpaid_students_count
@@ -185,3 +185,18 @@ def dashboard(request):
     data["declined_job_application_count"]=declined_job_application_count
 
     return Response(data,status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET', ])
+@permission_classes([IsAuthenticated])
+def my_profile(request):
+    if(Student.objects.filter(account=request.user).exists()):
+        student = Student.objects.filter(account=request.user)
+    else:
+        student = Student.objects.create(
+            account=request.user,
+            auto_id=get_auto_id(Student)
+        )
+    serializer = StudentSerializer(student)
+    return Response(serializer.data,status=status.HTTP_200_OK)

@@ -30,21 +30,25 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(data)
         print(data)
         print(self.scope)
+        data["id"] = await sync_to_async(get_last_id)()
 
         data["sender_id"] = self.scope["user"].id
 
         msg_data ={
-                'chat_id': data["chat"],
-                'sender_id': self.scope["user"].id,
-                'content':data["content"],
-                'msg_type':data["msg_type"]
-            }
+            'chat_id': data["chat"],
+            'sender_id': self.scope["user"].id,
+            'content':data["content"],
+            'msg_type':data["msg_type"]
+        }
 
         print(msg_data)
 
         await sync_to_async(Message.objects.create)(**msg_data)
-
         
+
+        # a = await Message.objects.create(**msg_data)
+        print("a ////////////////")
+
         members = data["chat_members"]
 
         print(members)
@@ -62,3 +66,11 @@ class ChatConsumer(AsyncWebsocketConsumer):
         print(event["data"])
         await self.send(text_data = json.dumps(event["data"]))
 
+
+def get_last_id():
+    last_msg = Message.objects.all().first()
+    return(last_msg.id +1)
+
+def create_msg(msg):
+    last_msg = Message.objects.all().first()
+    return(last_msg.id +1)
