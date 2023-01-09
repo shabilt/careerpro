@@ -11,9 +11,19 @@ from rest_framework.authtoken.models import Token
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from main.functions import get_auto_id
 from rest_framework.decorators import api_view, permission_classes
+from rest_framework.pagination import PageNumberPagination
 
 
 # Create your views here.
+
+
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 100
+    page_size_query_param = 'page'
+    max_page_size = 1000
+
+# class FooViewSet(viewsets.ModelViewSet):
+#     pagination_class = StandardResultsSetPagination
 
 
 class StudentViewSet(ModelViewSet):
@@ -22,6 +32,8 @@ class StudentViewSet(ModelViewSet):
     filter_backends = [SearchFilter]
     search_fields = ['account__username']
     permission_classes = [IsAuthenticated]
+    # pagination_class = StandardResultsSetPagination
+
 
 
     def update(self, request, pk=None):
@@ -84,9 +96,8 @@ class StudentViewSet(ModelViewSet):
             queryset = Student.objects.filter(is_deleted = False,fees_paid=False)
         else:
             queryset = Student.objects.filter(is_deleted = False)
-
-        serializer = StudentSerializer(queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+        serializer = self.get_serializer(queryset, many=True)
+        return self.get_paginated_response(serializer.data)
 
 
 

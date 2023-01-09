@@ -23,7 +23,6 @@ class SpecializationSerializer(serializers.ModelSerializer):
             
         }
     def create(self, validated_data):
-        print("validated_data //////////")
         print(validated_data)
         specialization = Specialization.objects.create(
             **validated_data,
@@ -134,7 +133,7 @@ class AccountSerializer(serializers.ModelSerializer):
 
       
 
-class StudentSerializer(serializers.ModelSerializer):
+class StudentSerializer2(serializers.ModelSerializer):
     # queryset = Student.objects.filter(is_deleted=False).order_by("-auto_id") 
     # username = serializers.CharField(write_only=True)
     # phone = serializers.CharField(write_only=True)
