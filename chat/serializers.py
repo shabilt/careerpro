@@ -4,7 +4,7 @@ from account.models import Account
 from account.serializers import AccountSerializer, RegistrationSerializer
 from main.functions import get_auto_id, password_generater, send_common_mail
 from student.models import Specialization, Student,JobApplication
-from chat.models import Chat,ChatMember,Message
+from chat.models import Chat,ChatMember,Message,MessageFile
 from django.db import transaction
 
 class ChatSerializer(serializers.ModelSerializer):
@@ -43,8 +43,26 @@ class MessageSerializer(serializers.ModelSerializer):
             'content',
             'timestamp',
             'read',
-            'sender_name'
+            'sender_name',
+            'msg_type'
         ]
 
 
 
+class MessageFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MessageFile
+        fields = [
+            'id',
+            'msg_file'
+        ]
+        extra_kwargs = {
+            'account': {'read_only': True},
+        }
+    
+    def create(self,validated_data):
+        messageFile = MessageFile.objects.create(
+            **validated_data,
+            account = self.context['request'].user
+        )
+        return messageFile

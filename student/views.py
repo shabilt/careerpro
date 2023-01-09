@@ -76,6 +76,20 @@ class StudentViewSet(ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
+    def list(self, request):
+        fees_paid = self.request.query_params.get('fees_paid')
+        if(fees_paid=="true" or fees_paid==True):
+            queryset = Student.objects.filter(is_deleted = False,fees_paid=True)
+        elif(fees_paid=="false" or fees_paid==False):
+            queryset = Student.objects.filter(is_deleted = False,fees_paid=False)
+        else:
+            queryset = Student.objects.filter(is_deleted = False)
+
+        serializer = StudentSerializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+
 class SpecializationViewSet(ModelViewSet):
    
     queryset = Specialization.objects.all() 

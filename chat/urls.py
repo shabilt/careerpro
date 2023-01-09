@@ -12,6 +12,7 @@ router = routers.DefaultRouter()
 router.register('chat',ChatViewSet, basename='chat')
 router.register('chat-member',ChatMemberViewSet, basename='chat_member')
 router.register('message',MessageViewSet, basename='message')
+router.register('message-file',MessageFileViewSet, basename='message_file')
 # router.register('admin',AdminViewSet, basename='admin')
 
 

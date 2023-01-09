@@ -48,9 +48,10 @@ class Message(models.Model):
     # reciever = models.ForeignKey(
     #     Account, on_delete=models.CASCADE, related_name="reciever"
     # )
-    content = models.CharField(max_length=512)
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     read = models.BooleanField(default=False)
+    msg_type = models.CharField(max_length=50,null=True,blank=True)
     
     def __str__(self):
         return str(self.chat.name)
@@ -60,6 +61,26 @@ class Message(models.Model):
         verbose_name = ('Message')
         verbose_name_plural = _('Messages')
         ordering = ('-timestamp',)
+
+
+class MessageFile(models.Model):
+    account = models.ForeignKey(
+        Account, on_delete=models.CASCADE, related_name="files"
+    )
+    msg_file = models.FileField(upload_to ='msg_file',null=True,blank=True,default="")
+
+
+    
+    def __str__(self):
+        return str(self.chat.name)
+
+    class Meta:
+        db_table = 'message_file'
+        verbose_name = ('Message file')
+        verbose_name_plural = _('Message files')
+        ordering = ('-account',)
+
+
 
 
 # class Message(models.Model):
