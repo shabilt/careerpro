@@ -43,6 +43,13 @@ class ChatViewSet(ModelViewSet):
         chat_member = ChatMember.objects.filter(account=user).prefetch_related('chat')
 
         return chat_member.chat.objects.filter()
+   
+    # def retrieve(self, request, pk=None, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     queryset = queryset.get(pk=pk)
+    #     serializer = ChatSerializer(queryset, context={'request': self.request})
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
+
 
     def list(self, request):
         if(request.user.is_admin):
@@ -50,6 +57,26 @@ class ChatViewSet(ModelViewSet):
         else:
             members = ChatMember.objects.filter(account=request.user).values_list("chat__pk")
             queryset = Chat.objects.filter(pk__in = members)
+            if(not queryset):
+                queryset = Chat.objects.create(
+                    name = request.user.username
+                )
+                ChatMember.objects.create(
+                    chat = queryset,
+                    account = request.user
+                )
+                admins = Account.objects.filter(is_admin=True)
+                for admin in admins:
+                    ChatMember.objects.create(
+                    chat = queryset,
+                    account = admin
+                )
+                queryset = Chat.objects.filter(pk = queryset)
+                
+
+
+
+
         serializer = ChatSerializer(queryset, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 

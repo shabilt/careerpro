@@ -20,7 +20,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.parsers import JSONParser,FormParser, MultiPartParser,FileUploadParser
 from rest_framework.decorators import parser_classes
 from account.models import OtpVerification
-
+from django.contrib.sessions.backends.db import SessionStore
+import random
 
 
 @api_view(['POST',])
@@ -33,34 +34,54 @@ def registration_view(request):
         # print(request.data['email'])
         email = request.data.get('email', '0').lower()
         print(email)
-        if validate_email(email) != None:
-            data['error_message'] = 'That email is already in use.'
-            data['response'] = 'Error'
-            return Response(data)
+        # if validate_email(email) != None:
+        #     data['error_message'] = 'That email is already in use.'
+        #     data['response'] = 'Error'
+        #     return Response(data)
 
-        username = request.data.get('username', '0')
-        if validate_username(username) != None:
-            data['response'] = 'Error'
-            return Response(data)
+        # username = request.data.get('username', '0')
+        # if validate_username(username) != None:
+        #     data['response'] = 'Error'
+        #     return Response(data)
         request_data = request.data.copy()
-        request_data['role'] = 'student'
-        request_data['creator'] = request.user
+        # request_data['role'] = 'student'
+        # request_data['creator'] = request.user
+
+
 
         serializer = RegistrationSerializer(data=request_data)
         if serializer.is_valid():
-            user = serializer.save()
-            data['response'] = 'successfully registered new user.'
-            data['email'] = user.email
-            data['username'] = user.username
-            data['pk'] = user.pk
-            data['role'] = user.role
+        #     user = serializer.save()
+        #     data['response'] = 'successfully registered new user.'
+        #     data['email'] = user.email
+        #     data['username'] = user.username
+        #     data['pk'] = user.pk
+        #     data['role'] = user.role
 
-            token = Token.objects.get(user=user).key
-            data['token'] = token
+        #     token = Token.objects.get(user=user).key
+        #     data['token'] = token
             status_code=status.HTTP_200_OK
+            data= serializer.data
+
+            my_session = SessionStore()
+            my_session['email'] = request.data.get('email')
+            my_session['username'] = request.data.get('username')
+            my_session['password'] = request.data.get('password')
+            my_session['phone'] = request.data.get('phone')
+            my_session['full_name'] = request.data.get('full_name')
+            my_session['login_otp'] = random.randint(100000,999999)
+            my_session['login_otp_count'] = 5
+            my_session.create()
+            data['session_key'] = my_session.session_key
+            print(my_session['login_otp'])
         else:
             data = serializer.errors
+
+
         return Response(data,status=status_code)
+
+
+
 
 def validate_email(email):
     user = None
@@ -87,35 +108,53 @@ class EmailVerification(APIView):
     permission_classes = []
 
     def post(self,request):
+        session_key = request.data.get('session_key')
+        my_session = SessionStore(session_key=session_key)
+
         data = {}
         otp = request.data['otp']
-        otp_verification = OtpVerification.objects.get(pk=request.data['otp_verification'])
-        if (int(otp) == int(otp_verification.otp)):
-            print("trueee")
-            user = otp_verification.user
+        otp_verification = my_session['login_otp']
+        if ((int(otp) == int(otp_verification)) and (my_session['login_otp_count'] > 0)):
 
-            user.is_active = True
-            user.save()
-            otp_verification.delete()
-            data['response'] = "Email Verfied Successfully"
-            status_code=status.HTTP_200_OK
-            
+            request_data = request.data.copy()
+            request_data['role'] = 'student'
+            request_data['username'] = my_session['username']
+            request_data['email'] = my_session['email']
+            request_data['password'] = my_session['password']
+            request_data['full_name'] = my_session['full_name']
+            request_data['phone'] = my_session['phone']
+
+            serializer = RegistrationSerializer(data=request_data)
+            if serializer.is_valid():
+                user = serializer.save()
+                data['response'] = 'successfully registered new user.'
+                data['email'] = user.email
+                data['username'] = user.username
+                data['pk'] = user.pk
+                data['role'] = user.role
+
+                token = Token.objects.get(user=user).key
+                data['token'] = token
+                data['response'] = "Email Verfied Successfully"
+                status_code=status.HTTP_200_OK
+            else:
+                data = serializer.errors
+            return Response(data,status=status_code)
 
         else:
-            if(otp_verification.count > 0):
-                otp_verification.count -= 1
-                otp_verification.save()
-                # data['response'] = "invalid OTP"
+            if(my_session['login_otp_count'] > 0):
+                my_session['login_otp_count'] -= 1
                 data['error_message'] = "invalid OTP"
             else:
-                user = otp_verification.user
-                # user.delete()
-                otp_verification.delete()
-                # data['response'] = "Limit Exceeded, Register again !"
+                my_session.delete()
                 data['error_message'] = "Limit Exceeded, Register again"
 
             status_code=status.HTTP_400_BAD_REQUEST
         return Response(data,status=status_code)
+
+
+
+
         
 def resend_otp(request):
     response_data = {}
@@ -126,6 +165,7 @@ def resend_otp(request):
         subject = "Please Verify Your Email Address"
         text_content = "Dear <b>{}</b>,</br><p>We need to verify that {} is your email address so that it can be used with your careerpro account.<br>OTP : <b>{}</b></p>".format(user.username,email,otp_verification.otp)
         send_mail(text_content,email,subject)
+
         response_data['response'] = 'OTP is sent to your email'
         response_data['email'] = user.email
         response_data['username'] = user.username

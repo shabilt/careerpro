@@ -13,7 +13,8 @@ from account.views import(
     login_view,
     logout_view,
     profile_view,
-    validate_email
+    validate_email,
+    EmailVerification
 )
 from rest_framework.authtoken.views import obtain_auth_token
 
@@ -35,6 +36,8 @@ urlpatterns = [
     path('profile', profile_view, name="profile"), 
     path('register', registration_view, name="register"),
     path('validate-email', validate_email, name="register"),
+    path('email-verification/', EmailVerification.as_view(), name="email_verification"),
+
 ]
 
 urlpatterns += router.urls

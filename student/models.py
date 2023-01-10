@@ -105,7 +105,7 @@ class JobApplication(BaseModel):
         ('applied','Applied'),
         ('declined','Decline'),
         ('pending','Pending'),]
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    student = models.ForeignKey(Student,related_name='job_applications', on_delete=models.CASCADE)
     date = models.CharField(max_length=140,null=True,blank=True)
     company = models.CharField(max_length=140,null=False,blank=False)
     position = models.CharField(max_length=140,null=False,blank=False)

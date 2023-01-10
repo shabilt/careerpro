@@ -30,26 +30,28 @@ class SpecializationSerializer(serializers.ModelSerializer):
             # creator = self.context['request'].user
         )
         return specialization
-        
-    # def create(self, validated_data):
-    #     specialization = Specialization.objects.create(
-    #         **validated_data,
-    #         auto_id = get_auto_id(Specialization),
-    #         creator = self.context['request'].user
-    #     )
-    #     return specialization
-
-    
-    # def create(self, validated_data):
-    #     specialization = Specialization.objects.create(
-    #         **validated_data,
-    #         auto_id = get_auto_id(Specialization),
-    #         creator = self.context['request'].user
-    #     )
-    #     return specialization
+       
 
 
+class JobApplicationSerializer(serializers.ModelSerializer):
+    student_name = serializers.CharField(source='student.account.username',read_only = True)
+    class Meta:
+        model = JobApplication
+        fields = ['id','student','student_name','company','position','job_description','stage','last_date']
 
+        extra_kwargs = {
+                'id': {'read_only': True},
+                'student_name': {'read_only': True},
+        }	
+
+
+    def create(self,validated_data):
+        job_application = JobApplication.objects.create(
+            **validated_data,
+            auto_id = get_auto_id(JobApplication)
+        )
+
+        return job_application
 
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
@@ -67,65 +69,6 @@ class AccountSerializer(serializers.ModelSerializer):
 
         return account
 
-
-
-    # def create(self, validated_data):
-    #     password = password_generater(8)
-    #     validated_data["password"] = password
-    #     validated_data["password2"] = password
-    #     validated_data["role"] = "student"
-    #     if(not Account.objects.filter(username=validated_data["username"]).exists() and not Account.objects.filter(email=validated_data["email"]).exists()):
-    #         account_serializer = RegistrationSerializer(data=validated_data)
-    #         if account_serializer.is_valid():
-    #             account = account_serializer.save()
-
-
-    #             student = Student.objects.create(
-    #                 **validated_data,
-    #                 # account = account,
-    #                 auto_id = get_auto_id(Student)
-    #             )
-    #             # from_email = "mail.osperb@gmail.com"
-    #             to_email = account.email
-    #             subject = "Student Registration Completed"
-    #             html_context = {
-    #                 "title":"Student Registration Completed",
-    #                 "data":[
-    #                     {
-    #                         "label":"username",
-    #                         "value":account.username
-    #                     },
-    #                     {
-    #                         "label":"First Name",
-    #                         "value":account.full_name
-    #                     },
-    #                     {
-    #                         "label":"email",
-    #                         "value":account.email
-    #                     },
-    #                     {
-    #                         "label":"phone",
-    #                         "value":account.phone
-    #                     },
-    #                     {
-    #                         "label":"password",
-    #                         "value":password
-    #                     }
-    #                 ]
-    #             }
-    #             text_content = str(html_context)
-    #             send_common_mail(html_context,to_email,subject)
-    #             return student
-
-    #         else:
-    #             raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
-    #     else:
-    #         if(not Account.objects.filter(email=validated_data["email"]).exists()):
-    #             raise serializers.ValidationError({'error_message': 'Username or email already exists !'})
-    #         else:
-    #             raise serializers.ValidationError({'error_message': 'Username and Email already exists !'})
-
-        
 
 
 
@@ -188,10 +131,12 @@ class StudentSerializer2(serializers.ModelSerializer):
             'visa_end_date',
             'fees_paid',
             'application_submitted',
-            'specializations'
+            'specializations',
+            'job_applications'
             ]
         extra_kwargs = {
-        'balance':{'read_only': True},
+            # 'balance':{'read_only': True},
+            'job_applications':{'read_only': True},
         }
 
     def create(self, validated_data):
@@ -232,6 +177,8 @@ class StudentSerializer2(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     account = AccountSerializer()
     specializations = SpecializationSerializer(many=True)
+    job_applications = JobApplicationSerializer(many=True)
+
     class Meta:
         model = Student
         fields =  [
@@ -279,10 +226,13 @@ class StudentSerializer(serializers.ModelSerializer):
             'visa_end_date',
             'fees_paid',
             'application_submitted',
-            'specializations'
+            'specializations',
+            'job_applications'
             ]
         extra_kwargs = {
         'balance':{'read_only': True},
+        'job_applications':{'read_only': True},
+
         }
 
     def create(self, validated_data):
