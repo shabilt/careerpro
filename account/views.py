@@ -76,6 +76,8 @@ def registration_view(request):
             print(my_session['login_otp'])
         else:
             data = serializer.errors
+            status_code=status.HTTP_400_BAD_REQUEST
+
 
 
         return Response(data,status=status_code)
@@ -139,6 +141,7 @@ class EmailVerification(APIView):
                 status_code=status.HTTP_200_OK
             else:
                 data = serializer.errors
+                status_code=status.HTTP_400_BAD_REQUEST
             return Response(data,status=status_code)
 
         else:

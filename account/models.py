@@ -51,7 +51,7 @@ class Account(AbstractBaseUser):
     is_superuser = models.BooleanField(default=False,null=True,blank=True)
     full_name = models.CharField(max_length=30)
     phone = models.CharField(max_length=12)
-    address = models.CharField(max_length=140,null=True,blank=True)
+    # address = models.CharField(max_length=140,null=True,blank=True)
     dob = models.CharField(max_length=30,null=True,blank=True)
     role = models.CharField(max_length=30,null=True,blank=True,default="student")
 

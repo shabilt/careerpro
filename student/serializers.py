@@ -37,7 +37,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source='student.account.username',read_only = True)
     class Meta:
         model = JobApplication
-        fields = ['id','student','student_name','company','position','job_description','stage','last_date']
+        fields = ['id','student','student_name','company','position','job_description','stage','last_date','job_link']
 
         extra_kwargs = {
                 'id': {'read_only': True},
@@ -76,99 +76,99 @@ class AccountSerializer(serializers.ModelSerializer):
 
       
 
-class StudentSerializer2(serializers.ModelSerializer):
-    # queryset = Student.objects.filter(is_deleted=False).order_by("-auto_id") 
-    # username = serializers.CharField(write_only=True)
-    # phone = serializers.CharField(write_only=True)
-    # email = serializers.CharField(write_only=True)
-    # full_name = serializers.CharField(write_only=True)
-    account = AccountSerializer()
-    specializations = SpecializationSerializer(many=True)
-    class Meta:
-        model = Student
-        fields =  [
-            'id',
-            'account',
-            'address',
-            'dob',
-            'profilepic',
-            'cv',
-            'cover_letter',
-            'cover_letter_two',
-            'linkedin_profile',
-            'company_cv',
-            'company_cv_two',
-            'linkedin_username',
-            'linkedin_password',
-            'university',
-            'university_dead_line',
-            'course_campus',
-            'course_title',
-            'course_start_date',
-            'course_end_date',
-            'company_name',
-            'designation',
-            'first_preferred_location',
-            'second_preferred_location',
-            'third_preferred_location',
-            'forth_preferred_location',
-            'working_type',
-            'work_start_date',
-            'work_end_date',
-            'work_duration',
-            'contract_submit_date',
-            'expr_certi_submit_date',
-            'first_job_sector',
-            'second_job_sector',
-            'third_job_sector',
-            'forth_job_sector',
-            'first_job_role',
-            'second_job_role',
-            'third_job_role',
-            'forth_job_role',
-            'course_duration',
-            'visa_start_date',
-            'visa_end_date',
-            'fees_paid',
-            'application_submitted',
-            'specializations',
-            'job_applications'
-            ]
-        extra_kwargs = {
-            # 'balance':{'read_only': True},
-            'job_applications':{'read_only': True},
-        }
+# class StudentSerializer2(serializers.ModelSerializer):
+#     # queryset = Student.objects.filter(is_deleted=False).order_by("-auto_id") 
+#     # username = serializers.CharField(write_only=True)
+#     # phone = serializers.CharField(write_only=True)
+#     # email = serializers.CharField(write_only=True)
+#     # full_name = serializers.CharField(write_only=True)
+#     account = AccountSerializer()
+#     specializations = SpecializationSerializer(many=True)
+#     class Meta:
+#         model = Student
+#         fields =  [
+#             'id',
+#             'account',
+#             'address',
+#             'dob',
+#             'profilepic',
+#             'cv',
+#             'cover_letter',
+#             'cover_letter_two',
+#             'linkedin_profile',
+#             'company_cv',
+#             'company_cv_two',
+#             'linkedin_username',
+#             'linkedin_password',
+#             'university',
+#             'university_dead_line',
+#             'course_campus',
+#             'course_title',
+#             'course_start_date',
+#             'course_end_date',
+#             'company_name',
+#             'designation',
+#             'first_preferred_location',
+#             'second_preferred_location',
+#             'third_preferred_location',
+#             'forth_preferred_location',
+#             'working_type',
+#             'work_start_date',
+#             'work_end_date',
+#             'work_duration',
+#             'contract_submit_date',
+#             'expr_certi_submit_date',
+#             'first_job_sector',
+#             'second_job_sector',
+#             'third_job_sector',
+#             'forth_job_sector',
+#             'first_job_role',
+#             'second_job_role',
+#             'third_job_role',
+#             'forth_job_role',
+#             'course_duration',
+#             'visa_start_date',
+#             'visa_end_date',
+#             'fees_paid',
+#             'application_submitted',
+#             'specializations',
+#             'job_applications'
+#             ]
+#         extra_kwargs = {
+#             # 'balance':{'read_only': True},
+#             'job_applications':{'read_only': True},
+#         }
 
-    def create(self, validated_data):
-        print("create ///.")
-        account_serializer = AccountSerializer(data=validated_data["account"])
-        specializations = validated_data["specializations"]
+#     def create(self, validated_data):
+#         print("create ///.")
+#         account_serializer = AccountSerializer(data=validated_data["account"])
+#         specializations = validated_data["specializations"]
 
-        try:
-            with transaction.atomic():
-                if(account_serializer.is_valid()):
-                    validated_data["account"] = account_serializer.save()
-                    validated_data.pop("specializations")
-                    student = Student.objects.create(
-                        **validated_data,
-                        auto_id = get_auto_id(Student),
-                    )
-                    for item in specializations:
-                        item.update({'student':student})
+#         try:
+#             with transaction.atomic():
+#                 if(account_serializer.is_valid()):
+#                     validated_data["account"] = account_serializer.save()
+#                     validated_data.pop("specializations")
+#                     student = Student.objects.create(
+#                         **validated_data,
+#                         auto_id = get_auto_id(Student),
+#                     )
+#                     for item in specializations:
+#                         item.update({'student':student})
 
-                        print(item)
+#                         print(item)
 
-                        specialization_serializer = SpecializationSerializer(data = item)
-                        if(specialization_serializer.is_valid()):
-                            Specialization.objects.create(
-                                auto_id = get_auto_id(Specialization),
-                                **item
-                            )
-                        else:
-                            raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
-                    return student
-        except:
-            raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
+#                         specialization_serializer = SpecializationSerializer(data = item)
+#                         if(specialization_serializer.is_valid()):
+#                             Specialization.objects.create(
+#                                 auto_id = get_auto_id(Specialization),
+#                                 **item
+#                             )
+#                         else:
+#                             raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
+#                     return student
+#         except:
+#             raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
 
 
 
@@ -351,7 +351,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source='student.account.username',read_only = True)
     class Meta:
         model = JobApplication
-        fields = ['id','student','student_name','company','position','job_description','stage','last_date']
+        fields = ['id','student','student_name','company','position','job_description','stage','last_date','job_link']
 
         extra_kwargs = {
                 'id': {'read_only': True},
@@ -387,6 +387,23 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 
 
         return job_application
+
+
+
+ 
+
+class StudentFileSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields =  [
+            'profilepic',
+            'cv',
+            'cover_letter',
+            'cover_letter_two',
+            'linkedin_profile',
+            'company_cv',
+            'company_cv_two',
+            ]
 
 
 

@@ -1,7 +1,7 @@
 from urllib import response
 from django.shortcuts import get_object_or_404, render
 # from main.permissions import IsUser
-from student.serializers import SpecializationSerializer, StudentNoteSerializer, StudentSerializer,UpdateStudentSerializer,JobApplicationSerializer
+from student.serializers import SpecializationSerializer, StudentNoteSerializer, StudentSerializer,UpdateStudentSerializer,JobApplicationSerializer,StudentFileSerializer
 from .models import *
 from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import ModelViewSet
@@ -64,9 +64,18 @@ class StudentViewSet(ModelViewSet):
                          auto_id = get_auto_id(Specialization),
                          **item
                     )
-        instance = Student.objects.get(pk=instance.pk)
-        data = StudentSerializer(instance=instance).data
-        return Response(data,status=status.HTTP_200_OK)
+                instance = Student.objects.get(pk=instance.pk)
+                data = StudentSerializer(instance=instance).data
+                status_code=status.HTTP_200_OK
+
+            else:
+                data = serializer.errors
+                status_code=status.HTTP_400_BAD_REQUEST
+
+        else:
+            data = {"error_message":"Access deneid !"}
+            status_code=status.HTTP_401_UNAUTHORIZED
+        return Response(data,status=status_code)
 
     def destroy(self, request, *args, pk=None, **kwargs ):
         # try:
@@ -124,6 +133,24 @@ class SpecializationViewSet(ModelViewSet):
             data = {"Not found !"}
             return Response(data,status=status.HTTP_403_FORBIDDEN)  
 
+
+
+class StudentFileViewSet(ModelViewSet):
+    serializer_class = StudentFileSerializer
+    queryset = Student.objects.filter(is_deleted = False)
+    filter_backends = [SearchFilter]
+    search_fields = ['account__username']
+    permission_classes = [IsAuthenticated]
+    # pagination_class = StandardResultsSetPagination
+    # def get_queryset(self):
+    #     user = self.request.user
+    #     if(user.is_admin):
+    #         queryset = Student.objects.filter(student=student).order_by('auto_id')
+    #     else:
+    #         queryset = Student.objects.all().order_by('auto_id')
+    #     return queryset
+
+
 class JobApplicationViewSet(ModelViewSet):
     serializer_class = JobApplicationSerializer
     queryset = JobApplication.objects.all()
@@ -139,12 +166,14 @@ class StudentNoteViewSet(ModelViewSet):
     permission_classes = [IsAdminUser]
     filter_backends = [SearchFilter]
     search_fields = ['title','date','note']
+    pagination_class = StandardResultsSetPagination
+
     def get_queryset(self):
         student = self.request.query_params.get('student')
         if(student):
-            queryset = StudentNote.objects.filter(student=student)
+            queryset = StudentNote.objects.filter(student=student).order_by('auto_id')
         else:
-            queryset = StudentNote.objects.all()
+            queryset = StudentNote.objects.all().order_by('auto_id')
         return queryset
 
 
@@ -200,3 +229,11 @@ def my_profile(request):
         )
     serializer = StudentSerializer(student)
     return Response(serializer.data,status=status.HTTP_200_OK)
+
+
+
+@api_view(['GET', ])
+@permission_classes([IsAuthenticated])
+def students_list(request):
+    students = Student.objects.filter(is_deleted=False).values("id","account__full_name")
+    return Response(students,status=status.HTTP_200_OK)

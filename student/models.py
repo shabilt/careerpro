@@ -11,7 +11,7 @@ from main.models import BaseModel
 
 class Student(BaseModel):
     WORKING_TYPE =(
-        ("Work",'Work'),
+        ("Placement",'Placement'),
         ("Internship",'Internship')
     )
     account = models.ForeignKey(Account,related_name='student_account',on_delete=models.CASCADE)
@@ -54,18 +54,16 @@ class Student(BaseModel):
     third_job_role = models.CharField(max_length=50,null=True,blank=True)
     forth_job_role = models.CharField(max_length=50,null=True,blank=True)
     course_duration = models.CharField(max_length=50,null=True,blank=True)
-    visa_start_date =  models.DateField(null=True,blank=True)
-    visa_end_date =  models.DateField(null=True,blank=True)
+    visa_start_date =  models.CharField(max_length=50,null=True,blank=True)
+    visa_end_date =  models.CharField(max_length=50,null=True,blank=True)
     fees_paid = models.BooleanField(default=False)
     application_submitted = models.BooleanField(default=False)
-
 
     class Meta:
         db_table = 'student'
         verbose_name = ('Student')
         verbose_name_plural = _('Student')
         ordering = ('-date_added',)
-
 
     def __str__(self):
         return str(self.account.full_name)
@@ -112,6 +110,7 @@ class JobApplication(BaseModel):
     job_description = models.CharField(max_length=140,null=False,blank=False)
     stage = models.CharField(max_length=140,choices=STAGE_CHOICES,blank=False)
     last_date =  models.CharField(max_length=140,null=True,blank=True)
+    job_link =  models.TextField(null=True,blank=True)
 
 
     class Meta:
