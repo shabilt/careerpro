@@ -62,6 +62,21 @@ def registration_view(request):
         #     data['token'] = token
             status_code=status.HTTP_200_OK
             data= serializer.data
+            otp = random.randint(1000,9999)
+
+            to_email = request.data.get('email')
+            subject = "OTP verification"
+            html_context = {
+                "title":"OTP verification",
+                "data":[
+                    {
+                        "label":"Your OTP is : ",
+                        "value":otp
+                    }
+                ]
+            }
+            text_content = str(html_context)
+            send_common_mail(html_context,to_email,subject)
 
             my_session = SessionStore()
             my_session['email'] = request.data.get('email')
@@ -69,7 +84,7 @@ def registration_view(request):
             my_session['password'] = request.data.get('password')
             my_session['phone'] = request.data.get('phone')
             my_session['full_name'] = request.data.get('full_name')
-            my_session['login_otp'] = random.randint(100000,999999)
+            my_session['login_otp'] = otp
             my_session['login_otp_count'] = 5
             my_session.create()
             data['session_key'] = my_session.session_key
@@ -77,7 +92,6 @@ def registration_view(request):
         else:
             data = serializer.errors
             status_code=status.HTTP_400_BAD_REQUEST
-
 
 
         return Response(data,status=status_code)
@@ -222,6 +236,7 @@ def update_account_view(request):
 @permission_classes((AllowAny, ))
 @parser_classes([JSONParser,FormParser, MultiPartParser,FileUploadParser])
 def login_view(request):
+
     context = {}
     username = request.data.get('username')
     password = request.data.get('password')

@@ -47,13 +47,16 @@ class ChatViewSet(ModelViewSet):
     # def retrieve(self, request, pk=None, *args, **kwargs):
     #     queryset = self.get_queryset()
     #     queryset = queryset.get(pk=pk)
+    #     queryset.unread = 0
+    #     print("retrive ///")
+    #     queryset.save()
     #     serializer = ChatSerializer(queryset, context={'request': self.request})
     #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def list(self, request):
         if(request.user.is_admin):
-            queryset = Chat.objects.all()
+            queryset = Chat.objects.all().order_by("-unread")
         else:
             members = ChatMember.objects.filter(account=request.user).values_list("chat__pk")
             queryset = Chat.objects.filter(pk__in = members)
@@ -119,6 +122,8 @@ class MessageViewSet(ModelViewSet):
         chat = self.request.query_params.get('chat')
         if(chat):
             queryset = Message.objects.filter(chat=chat)
+            if(request.user.is_admin):
+                Chat.objects.filter(pk=chat).update(unread=0)
         else:
             queryset = []
 

@@ -8,7 +8,7 @@ import urllib.parse
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from threading import Thread
-# import requests
+import requests
 
 # from django.utils.timezone import datetime
 
@@ -169,7 +169,7 @@ def get_auto_id(model):
 def send_common_mail(html_context,to_email,subject):
     def func(html_context,to_email,subject):
         html_content = render_to_string('email_templates/common_template1.html', html_context)
-        r = request.post('https://mail-sender.vingb.com/custom-mail/487c8896-fe55-456d-96e8-88b2fd18f098', data={
+        r = requests.post('https://mail-sender.vingb.com/custom-mail/edf554f6-c207-4ec7-a657-9285913a9a35', data={
             "to_email": to_email,
             "subject": subject,
             "html_data": html_content
