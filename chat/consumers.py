@@ -6,6 +6,10 @@ from chat.models import Chat,ChatMember,Message
 from chat.serializers import MessageSerializer
 from asgiref.sync import sync_to_async
 from channels.db import database_sync_to_async
+
+import django
+django.setup()
+
 from account.models import Account
 
  
