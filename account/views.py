@@ -80,7 +80,7 @@ def registration_view(request):
 
             my_session = SessionStore()
             my_session['email'] = request.data.get('email')
-            my_session['username'] = request.data.get('username')
+            # my_session['username'] = request.data.get('username')
             my_session['password'] = request.data.get('password')
             my_session['phone'] = request.data.get('phone')
             my_session['full_name'] = request.data.get('full_name')
@@ -109,15 +109,15 @@ def validate_email(email):
     if user != None:
         return email
 
-def validate_username(username):
-    user = None
-    try:
-        user = Account.objects.get(username=username)
-    except Account.DoesNotExist:
-        return None
-    if user != None:
-        return username
-# =====================================================
+# def validate_username(username):
+#     user = None
+#     try:
+#         user = Account.objects.get(username=username)
+#     except Account.DoesNotExist:
+#         return None
+#     if user != None:
+#         return username
+# # =====================================================
 
 class EmailVerification(APIView):
     authentication_classes = []
@@ -134,7 +134,7 @@ class EmailVerification(APIView):
 
             request_data = request.data.copy()
             request_data['role'] = 'student'
-            request_data['username'] = my_session['username']
+            # request_data['username'] = my_session['username']
             request_data['email'] = my_session['email']
             request_data['password'] = my_session['password']
             request_data['full_name'] = my_session['full_name']
@@ -145,7 +145,7 @@ class EmailVerification(APIView):
                 user = serializer.save()
                 data['response'] = 'successfully registered new user.'
                 data['email'] = user.email
-                data['username'] = user.username
+                # data['username'] = user.username
                 data['pk'] = user.pk
                 data['role'] = user.role
 
@@ -180,12 +180,11 @@ def resend_otp(request):
         otp_verification = OtpVerification.objects.filter(user__email=email).first()
         user = otp_verification.user
         subject = "Please Verify Your Email Address"
-        text_content = "Dear <b>{}</b>,</br><p>We need to verify that {} is your email address so that it can be used with your careerpro account.<br>OTP : <b>{}</b></p>".format(user.username,email,otp_verification.otp)
+        text_content = "Dear <b>{}</b>,</br><p>We need to verify that {} is your email address so that it can be used with your careerpro account.<br>OTP : <b>{}</b></p>".format(user.full_name,email,otp_verification.otp)
         send_mail(text_content,email,subject)
 
         response_data['response'] = 'OTP is sent to your email'
         response_data['email'] = user.email
-        response_data['username'] = user.username
         response_data['otp_verification'] = str(otp_verification.id)
         response_data['status']="true"
         status_code = status.HTTP_200_OK
@@ -238,11 +237,9 @@ def update_account_view(request):
 def login_view(request):
 
     context = {}
-    username = request.data.get('username')
+    email = request.data.get('email')
     password = request.data.get('password')
-    print(username)
-    print(password)
-    user = authenticate(username=username,password=password)
+    user = authenticate(email=email,password=password)
     # print("user //")
     # print(user)
 
@@ -254,12 +251,12 @@ def login_view(request):
 
         context['response'] = 'Successfully authenticated.'
         context['pk'] = user.pk
-        context['username'] = username.lower()
+        context['email'] = email.lower()
         context['token'] = token.key
         context['role'] = user.role
     else:
         context['response'] = 'Error'
-        context['error_message'] = 'The username or password is incorrect'
+        context['error_message'] = 'The email or password is incorrect'
     return Response(context)
 
 
@@ -290,7 +287,6 @@ def profile_view(request):
     context = {}
     if(Account.objects.filter(pk=request.user.pk).exists()):
         user = Account.objects.get(pk=request.user.pk)
-        context["username"] = user.username
         context["email"] = user.email
         context["phone"] = user.phone
         context["full_name"] = user.full_name
@@ -371,8 +367,8 @@ def forgot_password(request):
             "title":"Password changed Successfully",
             "data":[
                 {
-                    "label":"username",
-                    "value":user.username
+                    "label":"email",
+                    "value":user.email
                 },
                 {
                     "label":"Your New Password",
@@ -444,9 +440,6 @@ def send_mail(html_context,to_email,subject):
         "subject": subject,
         "html_data": html_context
     })
-
-
-
 
 
 

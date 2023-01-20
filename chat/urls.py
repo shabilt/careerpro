@@ -18,9 +18,8 @@ router.register('message-file',MessageFileViewSet, basename='message_file')
 
 
 urlpatterns = [
-    path("/", index, name="index"),
+    path("", index, name="index"),
     # path("<str:room_name>/", room, name="room"),
-    
 ]
 
 urlpatterns += router.urls
