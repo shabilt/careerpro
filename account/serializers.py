@@ -14,7 +14,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Account
-        fields = ['email','username','phone','password','full_name','role']
+        fields = ['email','phone','password','full_name','role']
         extra_kwargs = {
                 'password': {'write_only': True},
         }    
@@ -24,7 +24,6 @@ class RegistrationSerializer(serializers.ModelSerializer):
 
         user = Account(
             email=self.validated_data['email'],
-            username=self.validated_data['username'],
             phone=self.validated_data['phone'],
             full_name=self.validated_data['full_name'],
             role = self.validated_data['role']
@@ -78,10 +77,7 @@ class AdminSerializer(serializers.ModelSerializer):
                 html_context = {
                     "title":"admin Registration Completed",
                     "data":[
-                        {
-                            "label":"username",
-                            "value":account.username
-                        },
+             
                         {
                             "label":"First Name",
                             "value":account.full_name
@@ -114,7 +110,6 @@ class AdminSerializer(serializers.ModelSerializer):
         try:
             email = validated_data["email"]
         except:
-            username = ""
             email = ""
         if((not Account.objects.filter(email=email).exists()) or Account.objects.filter(pk = instance.pk ,email=email).exists()):
             account = Account.objects.get(pk=instance.pk)

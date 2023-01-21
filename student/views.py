@@ -30,7 +30,7 @@ class StudentViewSet(ModelViewSet):
     serializer_class = StudentSerializer
     queryset = Student.objects.filter(is_deleted = False)
     filter_backends = [SearchFilter]
-    search_fields = ['account__username']
+    search_fields = ['account__email','account__full_name']
     permission_classes = [IsAuthenticated]
     # pagination_class = StandardResultsSetPagination
 
@@ -42,11 +42,10 @@ class StudentViewSet(ModelViewSet):
 
         if(request.user.is_admin or (instance.account == request.user)):
 
-            if((not Account.objects.filter(username=account_data["username"]).exists()) or Account.objects.filter(pk = instance.account.pk ,username=account_data["username"]).exists()):
+            if((not Account.objects.filter(email=account_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=account_data["email"]).exists()):
                 if((not Account.objects.filter(email=account_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=account_data["email"]).exists()):
                     account = Account.objects.get(pk=instance.account.pk)
                     account.full_name = account_data.get('full_name', account.full_name)
-                    account.username = account_data.get('username', account.full_name)
                     account.email = account_data.get('email', account.full_name)
                     account.phone = account_data.get('phone', account.phone)
                     account.save()
@@ -117,7 +116,7 @@ class SpecializationViewSet(ModelViewSet):
     serializer_class = SpecializationSerializer
     permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter]
-    search_fields = ['student__user__username','student__user__first_name','student__user__last_name']
+    search_fields = ['student__user__email','student__user__first_name','student__user__last_name']
 
     def destroy(self, request, *args, **kwargs):
         try:
@@ -139,7 +138,7 @@ class StudentFileViewSet(ModelViewSet):
     serializer_class = StudentFileSerializer
     queryset = Student.objects.filter(is_deleted = False)
     filter_backends = [SearchFilter]
-    search_fields = ['account__username']
+    search_fields = ['account__email','account__full_name']
     permission_classes = [IsAuthenticated]
     # pagination_class = StandardResultsSetPagination
     # def get_queryset(self):
@@ -156,7 +155,7 @@ class JobApplicationViewSet(ModelViewSet):
     queryset = JobApplication.objects.all()
     permission_classes = [IsAdminUser]
     filter_backends = [SearchFilter]
-    search_fields = ['student__user__username','student__user__first_name','student__user__last_name']
+    search_fields = ['student__user__email','student__user__first_name','student__user__last_name']
     
 
 

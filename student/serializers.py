@@ -34,7 +34,7 @@ class SpecializationSerializer(serializers.ModelSerializer):
 
 
 class JobApplicationSerializer(serializers.ModelSerializer):
-    student_name = serializers.CharField(source='student.account.username',read_only = True)
+    student_name = serializers.CharField(source='student.account.full_name',read_only = True)
     class Meta:
         model = JobApplication
         fields = ['id','student','student_name','company','position','job_description','stage','last_date','job_link']
@@ -56,7 +56,7 @@ class JobApplicationSerializer(serializers.ModelSerializer):
 class AccountSerializer(serializers.ModelSerializer):
     class Meta:
         model = Account
-        fields = ['email', 'username', 'phone','full_name','role']
+        fields = ['email', 'phone','full_name','role']
 
     def create(self, validated_data):
         password = password_generater(8)
@@ -354,7 +354,7 @@ class UpdateStudentSerializer(serializers.ModelSerializer):
 
 
 class JobApplicationSerializer(serializers.ModelSerializer):
-    student_name = serializers.CharField(source='student.account.username',read_only = True)
+    student_name = serializers.CharField(source='student.account.full_name',read_only = True)
     class Meta:
         model = JobApplication
         fields = ['id','student','student_name','company','position','job_description','stage','last_date','job_link']
@@ -415,7 +415,7 @@ class StudentFileSerializer(serializers.ModelSerializer):
 
 
 class StudentNoteSerializer(serializers.ModelSerializer):
-    student_name = serializers.CharField(source='student.account.username',read_only = True)
+    student_name = serializers.CharField(source='student.account.full_name',read_only = True)
     class Meta:
         model = StudentNote
         fields = ['id','student','student_name','title','note','date']
