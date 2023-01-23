@@ -14,6 +14,7 @@ class ChatSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'name',
+            'email',
             'unread',
             'is_group',
             'member'

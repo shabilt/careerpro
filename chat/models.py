@@ -10,6 +10,7 @@ from django.utils.translation import gettext as _
 class Chat(models.Model):
     # id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     name = models.CharField(max_length=128)
+    email = models.CharField(max_length=128,default="test@osperb.com")
     unread = models.PositiveIntegerField(default=0)
     is_group =  models.BooleanField(default=False)
 

@@ -62,7 +62,8 @@ class ChatViewSet(ModelViewSet):
             queryset = Chat.objects.filter(pk__in = members)
             if(not queryset):
                 queryset = Chat.objects.create(
-                    name = request.user.username
+                    name = request.user.full_name,
+                    email = request.user.email
                 )
                 ChatMember.objects.create(
                     chat = queryset,
@@ -76,10 +77,6 @@ class ChatViewSet(ModelViewSet):
                 )
                 queryset = Chat.objects.filter(pk = queryset)
                 
-
-
-
-
         serializer = ChatSerializer(queryset, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)
 
