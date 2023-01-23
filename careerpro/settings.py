@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-kqtk#co*ugo!ub5c_@)4do^h(frhjzv(^t9ogr(ayqi0_8d49c
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
-
+CSRF_TRUSTED_ORIGINS = ['*']
 
 # Application definition
 
@@ -107,7 +107,7 @@ ASGI_APPLICATION = 'careerpro.asgi.application'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-
+CSRF_TRUSTED_ORIGINS = ['https://example.com']
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
