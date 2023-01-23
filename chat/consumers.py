@@ -17,8 +17,7 @@ from account.models import Account
 class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self,):
         user = self.scope["user"]
-        self.roomGroupName = "user" + str(user)
-
+        self.roomGroupName = "user" + str(user.id)
         await self.channel_layer.group_add(
             self.roomGroupName ,
             self.channel_name
@@ -63,7 +62,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 def get_last_id(msg_data):
     last_msg = Message.objects.create(**msg_data)
     msg_data["id"] = last_msg.id
-    msg_data["chat_members"] = list(ChatMember.objects.filter(chat__id = msg_data["chat_id"]).values_list("account__username",flat=True))
+    msg_data["chat_members"] = list(ChatMember.objects.filter(chat__id = msg_data["chat_id"]).values_list("account__id",flat=True))
     chat = Chat.objects.get(pk = msg_data["chat_id"])
     if(Account.objects.filter(pk=msg_data["sender_id"],is_admin=False).exists()):
         chat.unread+=1

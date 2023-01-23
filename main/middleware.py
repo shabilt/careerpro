@@ -73,6 +73,7 @@ def get_user(scope):
     try:
         auth = TokenAuthentication()
         user = auth.authenticate_credentials(token)
+
     except AuthenticationFailed:
         pass
     return user or AnonymousUser()
