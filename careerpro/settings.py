@@ -107,7 +107,6 @@ ASGI_APPLICATION = 'careerpro.asgi.application'
 CORS_ORIGIN_ALLOW_ALL = True
 CORS_ALLOW_CREDENTIALS = True
 
-CSRF_TRUSTED_ORIGINS = ['https://example.com']
 
 # Database
 # https://docs.djangoproject.com/en/4.0/ref/settings/#databases
