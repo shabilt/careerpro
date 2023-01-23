@@ -98,16 +98,19 @@ class StudentViewSet(ModelViewSet):
 
 
     def list(self, request):
-        fees_paid = self.request.query_params.get('fees_paid')
-        if(fees_paid=="true" or fees_paid==True):
-            queryset = Student.objects.filter(is_deleted = False,fees_paid=True)
-        elif(fees_paid=="false" or fees_paid==False):
-            queryset = Student.objects.filter(is_deleted = False,fees_paid=False)
+        if(request.user.is_admin):
+            fees_paid = self.request.query_params.get('fees_paid')
+            if(fees_paid=="true" or fees_paid==True):
+                queryset = Student.objects.filter(is_deleted = False,fees_paid=True)
+            elif(fees_paid=="false" or fees_paid==False):
+                queryset = Student.objects.filter(is_deleted = False,fees_paid=False)
+            else:
+                queryset = Student.objects.filter(is_deleted = False)
+            page = self.paginate_queryset(queryset)
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         else:
-            queryset = Student.objects.filter(is_deleted = False)
-        page = self.paginate_queryset(queryset)
-        serializer = self.get_serializer(page, many=True)
-        return self.get_paginated_response(serializer.data)
+            return Response({"detail":"Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
