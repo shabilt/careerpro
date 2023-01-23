@@ -45,6 +45,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
 
 
         members = msg_data["chat_members"]
+        print(members)
         data["id"] = msg_data["id"]
 
         for member in members:
