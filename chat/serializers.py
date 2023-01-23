@@ -35,7 +35,7 @@ class ChatMemberSerializer(serializers.ModelSerializer):
         }
 
 class MessageSerializer(serializers.ModelSerializer):
-    sender_name = serializers.CharField(source='sender.username',read_only = True)
+    sender_name = serializers.CharField(source='sender.email',read_only = True)
     class Meta:
         model = Message
         fields = [

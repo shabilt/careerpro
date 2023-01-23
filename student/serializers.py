@@ -1,6 +1,7 @@
 from rest_framework import serializers
 # from careerpro import student
 from account.models import Account
+from chat.models import Chat,ChatMember
 from account.serializers import AccountSerializer, RegistrationSerializer
 from main.functions import get_auto_id, password_generater, send_common_mail
 from student.models import Specialization, Student,JobApplication, StudentNote
@@ -263,6 +264,22 @@ class StudentSerializer(serializers.ModelSerializer):
                         )
                     else:
                         raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
+
+                    chat = Chat.objects.create(
+                        name = validated_data["account"].full_name,
+                        email = validated_data["account"].email
+                    )
+                    ChatMember.objects.create(
+                        chat = chat,
+                        account = validated_data["account"]
+                    )
+                    admins = Account.objects.filter(is_admin=True)
+                    for admin in admins:
+                        ChatMember.objects.create(
+                        chat = queryset,
+                        account = admin
+                    )
+                    
                 return student
             else:
                 raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
