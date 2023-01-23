@@ -234,11 +234,11 @@ class StudentSerializer(serializers.ModelSerializer):
         'balance':{'read_only': True},
         'job_applications':{'read_only': True},
         'cv':{'read_only': True},
-        'cover_letter':{'read_only': True},
-        'cover_letter_two':{'read_only': True},
+        # 'cover_letter':{'read_only': True},
+        # 'cover_letter_two':{'read_only': True},
         'linkedin_profile':{'read_only': True},
-        'company_cv':{'read_only': True},
-        'company_cv_two':{'read_only': True},
+        # 'company_cv':{'read_only': True},
+        # 'company_cv_two':{'read_only': True},
 
         }
 
