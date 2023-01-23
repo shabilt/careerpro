@@ -120,7 +120,7 @@ class JobApplication(BaseModel):
         ordering = ('-date_added',)
 
     def __str__(self):
-        return "{} - {}".format(self.company,self.student.account.username)
+        return "{} - {}".format(self.company,self.student.account.full_name)
 
 
 class StudentNote(BaseModel):
