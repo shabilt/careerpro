@@ -110,7 +110,7 @@ class StudentViewSet(ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
         else:
-            return Response({"detail":"Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
+            return Response({"detail":"Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
 
 
 
