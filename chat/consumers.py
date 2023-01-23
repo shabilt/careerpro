@@ -18,6 +18,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
     async def connect(self,):
         user = self.scope["user"]
         self.roomGroupName = "user" + str(user.id)
+        print(self.roomGroupName)
         await self.channel_layer.group_add(
             self.roomGroupName ,
             self.channel_name
@@ -31,6 +32,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         )
     async def receive(self, text_data):
         data = json.loads(text_data)
+        print(data)
 
         data["sender_id"] = self.scope["user"].id
 
@@ -49,6 +51,7 @@ class ChatConsumer(AsyncWebsocketConsumer):
         data["id"] = msg_data["id"]
 
         for member in members:
+            
             await self.channel_layer.group_send(
                 "user" + str(member),{
                     "type" : "sendMessage" ,
@@ -63,7 +66,10 @@ class ChatConsumer(AsyncWebsocketConsumer):
 def get_last_id(msg_data):
     last_msg = Message.objects.create(**msg_data)
     msg_data["id"] = last_msg.id
-    msg_data["chat_members"] = list(ChatMember.objects.filter(chat__id = msg_data["chat_id"]).values_list("account__id",flat=True))
+    admins = list(Account.objects.filter(is_admin=True).values_list("id",flat=True))
+    chat_members = list(ChatMember.objects.filter(chat__id = msg_data["chat_id"]).values_list("account__id",flat=True))
+    msg_data["chat_members"]= list(set(admins) | set(chat_members))
+
     chat = Chat.objects.get(pk = msg_data["chat_id"])
     if(Account.objects.filter(pk=msg_data["sender_id"],is_admin=False).exists()):
         chat.unread+=1
