@@ -41,6 +41,7 @@ class StudentViewSet(ModelViewSet):
         account_data = request.data['account']
 
         if(request.user.is_admin or (instance.account == request.user)):
+            request.data["application_submitted"] = True 
 
             if((not Account.objects.filter(email=account_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=account_data["email"]).exists()):
                 if((not Account.objects.filter(email=account_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=account_data["email"]).exists()):
