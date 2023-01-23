@@ -91,11 +91,11 @@ class StudentViewSet(ModelViewSet):
             return Response(data,status=status.HTTP_204_NO_CONTENT)
 
     
-    def retrieve(self, request, pk=None, *args, **kwargs):
-        queryset = self.get_queryset()
-        queryset = queryset.get(pk=pk)
-        serializer = StudentSerializer(queryset, context={'request': self.request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    # def retrieve(self, request, pk=None, *args, **kwargs):
+    #     queryset = self.get_queryset()
+    #     queryset = queryset.get(pk=pk)
+    #     serializer = StudentSerializer(queryset, context={'request': self.request})
+    #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def list(self, request):
