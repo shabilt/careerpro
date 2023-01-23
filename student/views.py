@@ -41,7 +41,6 @@ class StudentViewSet(ModelViewSet):
         account_data = request.data['account']
 
         if(request.user.is_admin or (instance.account == request.user)):
-            request.data["application_submitted"] = True 
 
             if((not Account.objects.filter(email=account_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=account_data["email"]).exists()):
                 if((not Account.objects.filter(email=account_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=account_data["email"]).exists()):
@@ -65,6 +64,8 @@ class StudentViewSet(ModelViewSet):
                          **item
                     )
                 instance = Student.objects.get(pk=instance.pk)
+                instance.application_submitted = True
+                instance.save()
                 data = StudentSerializer(instance=instance).data
                 status_code=status.HTTP_200_OK
 
@@ -110,7 +111,7 @@ class StudentViewSet(ModelViewSet):
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
         else:
-            return Response({"detail":"Invalid token"}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({"detail":"Invalid token"}, status=status.HTTP_401_UNAUTHORIZED)
 
 
 
