@@ -35,7 +35,10 @@ class StudentViewSet(ModelViewSet):
     permission_classes = [IsAuthenticated]
     # pagination_class = StandardResultsSetPagination
 
-
+    def retrieve(self, request, pk=None):
+        item = get_object_or_404(self.queryset, pk=pk)
+        serializer = StudentSerializer(item)
+        return Response(serializer.data,status=status.HTTP_200_OK)
 
     def update(self, request, pk=None):
         instance = self.get_object()
