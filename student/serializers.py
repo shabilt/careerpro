@@ -234,11 +234,11 @@ class StudentSerializer(serializers.ModelSerializer):
         'balance':{'read_only': True},
         'job_applications':{'read_only': True},
         'cv':{'read_only': True},
-        # 'cover_letter':{'read_only': True},
-        # 'cover_letter_two':{'read_only': True},
+        'cover_letter':{'read_only': True},
+        'cover_letter_two':{'read_only': True},
         'linkedin_profile':{'read_only': True},
-        # 'company_cv':{'read_only': True},
-        # 'company_cv_two':{'read_only': True},
+        'company_cv':{'read_only': True},
+        'company_cv_two':{'read_only': True},
 
         }
 
@@ -276,7 +276,7 @@ class StudentSerializer(serializers.ModelSerializer):
                     admins = Account.objects.filter(is_admin=True)
                     for admin in admins:
                         ChatMember.objects.create(
-                        chat = queryset,
+                        chat = chat,
                         account = admin
                     )
                     
@@ -284,34 +284,7 @@ class StudentSerializer(serializers.ModelSerializer):
             else:
                 raise serializers.ValidationError({'error_message': 'Form vaidation error !'})
 
-              
-    # def update(self, instance, validated_data):
-    #     print("upadte ///")
-        # try:
-        #     username = validated_data["username"]
-        #     email = validated_data["email"]
-        # except:
-        #     username = ""
-        #     email = ""
             
-        # if((not Account.objects.filter(username=username).exists()) or Account.objects.filter(pk = instance.account.pk ,username=username).exists()):
-        #     if((not Account.objects.filter(email=email).exists()) or Account.objects.filter(pk = instance.account.pk ,email=email).exists()):
-        #         account = Account.objects.get(pk=instance.account.pk)
-        #         account.full_name = validated_data.get('full_name', account.full_name)
-        #         account.username = validated_data.get('username', account.full_name)
-        #         account.email = validated_data.get('email', account.full_name)
-        #         account.phone = validated_data.get('phone', account.phone)
-        #         account.save()
-        #         return instance
-        #     else:
-        #         raise serializers.ValidationError({'error_message': 'Email Username already exists !'})
-        # else:
-        #     if((not Account.objects.filter(email=validated_data["email"]).exists()) or Account.objects.filter(pk = instance.account.pk ,email=validated_data["email"]).exists()):
-        #         raise serializers.ValidationError({'error_message': 'Username already exists !'})
-        #     else:
-        #         raise serializers.ValidationError({'error_message': 'Email and Username already exists !'})
-
-
 
 
 class UpdateStudentSerializer(serializers.ModelSerializer):
@@ -427,9 +400,6 @@ class StudentFileSerializer(serializers.ModelSerializer):
             'company_cv',
             'company_cv_two',
             ]
-
-
-
 
 class StudentNoteSerializer(serializers.ModelSerializer):
     student_name = serializers.CharField(source='student.account.full_name',read_only = True)

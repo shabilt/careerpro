@@ -12,6 +12,7 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from main.functions import get_auto_id
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.pagination import PageNumberPagination
+from chat.models import Chat,ChatMember
 
 
 # Create your views here.
@@ -92,9 +93,8 @@ class StudentViewSet(ModelViewSet):
 
     
     # def retrieve(self, request, pk=None, *args, **kwargs):
-    #     queryset = self.get_queryset()
-    #     queryset = queryset.get(pk=pk)
-    #     serializer = StudentSerializer(queryset, context={'request': self.request})
+    #     queryset = Student.objects.get(pk=pk)
+    #     serializer = StudentSerializer(queryset)
     #     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
@@ -231,6 +231,22 @@ def my_profile(request):
             account=request.user,
             auto_id=get_auto_id(Student)
         )
+
+        chat = Chat.objects.create(
+            name = request.user.full_name,
+            email = request.user.email
+        )
+        ChatMember.objects.create(
+            chat = chat,
+            account = request.user
+        )
+        admins = Account.objects.filter(is_admin=True)
+        for admin in admins:
+            ChatMember.objects.create(
+            chat = chat,
+            account = admin
+        )
+
     serializer = StudentSerializer(student)
     return Response(serializer.data,status=status.HTTP_200_OK)
 
