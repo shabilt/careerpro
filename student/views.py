@@ -102,14 +102,16 @@ class StudentViewSet(ModelViewSet):
 
 
     def list(self, request):
+        queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
         if(request.user.is_admin):
             fees_paid = self.request.query_params.get('fees_paid')
             if(fees_paid=="true" or fees_paid==True):
-                queryset = Student.objects.filter(is_deleted = False,fees_paid=True)
+                queryset = queryset.filter(is_deleted = False,fees_paid=True)
             elif(fees_paid=="false" or fees_paid==False):
-                queryset = Student.objects.filter(is_deleted = False,fees_paid=False)
+                queryset = queryset.filter(is_deleted = False,fees_paid=False)
             else:
-                queryset = Student.objects.filter(is_deleted = False)
+                queryset = queryset.filter(is_deleted = False)
             page = self.paginate_queryset(queryset)
             serializer = self.get_serializer(page, many=True)
             return self.get_paginated_response(serializer.data)
@@ -148,6 +150,7 @@ class StudentFileViewSet(ModelViewSet):
     filter_backends = [SearchFilter]
     search_fields = ['account__email','account__full_name']
     permission_classes = [IsAuthenticated]
+    
     # pagination_class = StandardResultsSetPagination
     # def get_queryset(self):
     #     user = self.request.user
@@ -163,7 +166,7 @@ class JobApplicationViewSet(ModelViewSet):
     queryset = JobApplication.objects.all()
     permission_classes = [IsAdminUser]
     filter_backends = [SearchFilter]
-    search_fields = ['student__user__email','student__user__first_name','student__user__last_name']
+    search_fields = ['student__account__email','student__account__full_name']
     
 
 
