@@ -148,8 +148,11 @@ class MessageFileViewSet(ModelViewSet):
     def create(self, request,*args, **kwargs):
         serializer = self.get_serializer(data=request.data, context={'request': self.request})
         if(serializer.is_valid()):
-                self.perform_create(serializer)
-                return Response(serializer.data, status=status.HTTP_200_OK)
+            self.perform_create(serializer)
+            data = serializer.data
+            data["msg_file"] =  self.request.build_absolute_uri(data["msg_file"])
+            return Response(data, status=status.HTTP_200_OK)
+
         else:
             data = {"error":serializer.errors}
             return Response(data, status=status.HTTP_400_BAD_REQUEST)
