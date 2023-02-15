@@ -140,5 +140,17 @@ class MessageFileViewSet(ModelViewSet):
         serializer = MessageFileSerializer(item)
         serializer = MessageFileSerializer(item, context={"request": request})
         serializer = {}
+        return Response({},status=status.HTTP_200_OK)
+    # def get_serializer(self):
+    #     print("get_serializer ../")
+    #     return MessageFileSerializer(context={"request": self.request})
 
-        return Response(serializer.data,status=status.HTTP_200_OK)
+    def create(self, request,*args, **kwargs):
+        serializer = self.get_serializer(data=request.data, context={'request': self.request})
+        if(serializer.is_valid()):
+                self.perform_create(serializer)
+                return Response(serializer.data, status=status.HTTP_200_OK)
+        else:
+            data = {"error":serializer.errors}
+            return Response(data, status=status.HTTP_400_BAD_REQUEST)
+

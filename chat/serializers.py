@@ -72,4 +72,5 @@ class MessageFileSerializer(serializers.ModelSerializer):
             **validated_data,
             account = self.context['request'].user
         )
+        # messageFile.msg_file = "self.request.build_absolute_uri(messageFile.msg_file)"
         return messageFile
