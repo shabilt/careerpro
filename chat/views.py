@@ -151,6 +151,7 @@ class MessageFileViewSet(ModelViewSet):
             self.perform_create(serializer)
             data = serializer.data
             data["msg_file"] =  self.request.build_absolute_uri(data["msg_file"])
+            print(data)
             return Response(data, status=status.HTTP_200_OK)
 
         else:
