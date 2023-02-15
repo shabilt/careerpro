@@ -61,6 +61,11 @@ class MessageFileSerializer(serializers.ModelSerializer):
         extra_kwargs = {
             'account': {'read_only': True},
         }
+    def get_msg_file(self, instance):
+        request = self.context.get('request')
+        msg_file = instance.msg_file.url
+        return request.build_absolute_uri(msg_file)
+
     
     def create(self,validated_data):
         messageFile = MessageFile.objects.create(
