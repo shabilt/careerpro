@@ -52,23 +52,16 @@ class MessageSerializer(serializers.ModelSerializer):
 
 
 class MessageFileSerializer(serializers.ModelSerializer):
-    msg_file2 = serializers.SerializerMethodField()
     class Meta:
         model = MessageFile
         fields = [
             'id',
             'msg_file',
-            'msg_file2'
         ]
         extra_kwargs = {
             'account': {'read_only': True},
         }
-    def get_msg_file2(self, instance):
-        request = self.context.get('request')
-        msg_file = instance.msg_file.url
-        return request.build_absolute_uri(msg_file)
 
-    
     def create(self,validated_data):
         messageFile = MessageFile.objects.create(
             **validated_data,
