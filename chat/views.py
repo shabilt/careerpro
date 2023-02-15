@@ -134,18 +134,8 @@ class MessageFileViewSet(ModelViewSet):
     queryset = MessageFile.objects.all()
     permission_classes = [IsAuthenticated]
     filter_backends = [SearchFilter]
-    # search_fields = ['student__user__username','student__user__first_name','student__user__last_name']
 
-    # def list(self, request):
-    #     chat = self.request.query_params.get('chat')
-    #     if(chat):
-    #         queryset = MessageFile.objects.filter(chat=chat)
-    #     else:
-    #         queryset = []
-
-    #     serializer = MessageFileSerializer(queryset, many=True)
-    #     return Response(serializer.data,status=status.HTTP_200_OK)
-
-
-# Create your views here.
-
+    def retrieve(self, request, pk=None):
+        item = get_object_or_404(self.queryset, pk=pk)
+        serializer = MessageFileSerializer(item)
+        return Response(serializer.data,status=status.HTTP_200_OK)
