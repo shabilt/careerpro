@@ -139,4 +139,6 @@ class MessageFileViewSet(ModelViewSet):
         item = get_object_or_404(self.queryset, pk=pk)
         serializer = MessageFileSerializer(item)
         serializer = MessageFileSerializer(item, context={"request": request})
+        serializer = {}
+
         return Response(serializer.data,status=status.HTTP_200_OK)
